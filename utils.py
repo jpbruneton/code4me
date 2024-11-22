@@ -1,8 +1,8 @@
 import openai
 import ast
-
+import openai_apikey
 # Set up the OpenAI API key
-openai.api_key = "your_api_key"
+openai.api_key = openai_apikey.api_key
 assert openai.api_key != "your_api_key", "Please set your OpenAI API key in the `openai.api_key` variable"
 
 # File to save the generated code
@@ -28,14 +28,14 @@ def designer(initial_prompt):
     Use ChatGPT to break down the goal into subproblems.
     """
     breakdown_prompt = (
-    f"Decompose the following programming task into a list of subproblems. "
-    f"Each subproblem should describe a single Python function in a concise sentence. "
+    f"Decompose the following programming task into a datastructure problem and associated list of subproblems. "
+    f"You can use both classes and functions. Each subproblem should describe a single Python function or method within a class"
+    f" in a concise sentence. Take as many subproblems as needed to achieve the goal. "
     f"The description must include the function's purpose, the variables (with their types), "
     f"and the expected return value. Provide the response as a list of dictionnaries,"
     f" must be starting with [, ending with ] format with no additional comments. Each such item may describe functions, "
     f"or classes, depending on the task. If they are classes, you need to provide the detailed list of attributes and methods.\n\n"
-    f"Make sure that the combinations of all these functions will achieve the goal, the main function to execute "
-    f"the program should be called 'run'.\n\n"
+    f"Make sure that the combinations of all these functions will achieve the goal. The main function to execute the program should be called 'run'.\n\n"
     f"The overall task is as follows:\n\n{initial_prompt}"
     )
 
@@ -56,7 +56,7 @@ def critic_design(initial_prompt, current_design):
     {current_design}
 
     Evaluate if this design and split of the main problem into smaller problems will be enough to achieve the goal.
-    If yes, just return 'Yes' and nothing else. 
+    If yes, just return 'the design is ok as is' and nothing else. 
     If not, suggest more functions and/or data structures to do so. Provide the response as a list of dictionaries,"
     f" that must be starting with [, ending with ] with no additional comments.
     """
@@ -87,17 +87,19 @@ def critic_review(initial_prompt, current_code):
 
 def concatenate_designs(design, critic):
     """
-    Concatenate the design and the critic's suggestions.
+    Concatenate the initial design with the critic's suggestions.
     """
-    try:
-        design = parse_answer(design)
-        critic = parse_answer(critic)
-        if design is None or critic is None:
-            return None
-        return str(design + critic)
-    except Exception as e:
-        print(f"Error concatenating the designs: {e}")
-        return None
+    concatenate_prompt = f""" You are a programmer combining different parts of a program. You have a design and a critic's feedback.
+    The design is as follows:
+    {design}
+    The critic's feedback is as follows:
+    {critic}
+    Combine the design and the critic's feedback into a single design that addresses the critic's concerns. Avoid redundancy.
+    Return an answer in the same format as the design, starting with [, ending with ] with no additional comments.
+    Also, reorder the tasks such that classes are defined first, followed by functions. Make sure that functions are defined after the classes they depend on, 
+    as well as other functions they may depend on. In this process, don't forget elements like imports, global variables, and the main function."""
+    response = chat_with_gpt(concatenate_prompt)
+    return response
 
 def function_coder(prompt, model="gpt-3.5-turbo"):
     """
@@ -159,6 +161,8 @@ def parse_answer(answer):
     Parse the answer from the GPT-3 response, given that it should be of the form '["item1", "item2", ...]'.
     This function just removes the brackets and tranform the str to a python list.
     """
+    if 'json' in answer:
+        answer = str(answer[7:-3])
     try:
         return ast.literal_eval(answer)
     except Exception as e:

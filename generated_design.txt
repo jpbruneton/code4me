@@ -1,2 +1,212 @@
-[{'name': 'generate_binary_trees', 'purpose': 'Generate all possible binary tree structures from a list of random integer leaf values.', 'variables': {'leaf_values': 'List[int]'}, 'return_value': 'List[TreeNode] representing the root nodes of possible binary trees.'}, {'name': 'build_tree_from_index', 'purpose': 'Build a binary tree given starting index and leaf nodes, ensuring each parent node equals the sum of its children.', 'variables': {'leaf_values': 'List[int]', 'start_index': 'int', 'end_index': 'int'}, 'return_value': 'TreeNode representing the root of a valid binary tree created from leaf values within the specified index range.'}, {'name': 'compute_sum', 'purpose': 'Compute the root node value of a tree given its structure to verify it meets the target root value.', 'variables': {'tree': 'TreeNode'}, 'return_value': 'int representing the sum value of the tree rooted at the given node.'}, {'name': 'verify_root_value', 'purpose': 'Check if a binary tree fulfills the condition that its root value matches the target root value.', 'variables': {'tree': 'TreeNode', 'target_value': 'int'}, 'return_value': 'bool indicating whether the root value matches the target value.'}, {'name': 'run', 'purpose': 'Execute the program to generate binary trees with given conditions and print those matching the target root value.', 'variables': {'leaf_values': 'List[int]', 'target_value': 'int'}, 'return_value': 'None'}, {'name': 'TreeNode', 'purpose': 'Define a data structure for a node in a binary tree.', 'fields': {'value': 'int', 'left': 'Optional[TreeNode]', 'right': 'Optional[TreeNode]'}}, {'name': 'generate_binary_trees', 'purpose': 'Generate all possible binary tree structures from a list of random integer leaf values.', 'variables': {'leaf_values': 'List[int]', 'target_value': 'int'}, 'return_value': 'List[TreeNode] representing the root nodes of possible binary trees that meet the root value condition.'}, {'name': 'build_tree_from_leaves', 'purpose': 'Build a binary tree structure recursively from a list of leaves and check it against the target root value.', 'variables': {'leaf_values': 'List[int]'}, 'return_value': 'List[TreeNode] representing all possible valid binary trees.'}, {'name': 'construct_trees', 'purpose': 'Recursively construct all possible trees from a list of nodes and combine them to form a new root.', 'variables': {'nodes': 'List[TreeNode]'}, 'return_value': 'List[TreeNode] representing all possible root nodes from the given nodes.'}, {'name': 'verify_and_filter_trees', 'purpose': 'Verify if the constructed trees meet the target root value and filter out invalid trees.', 'variables': {'trees': 'List[TreeNode]', 'target_value': 'int'}, 'return_value': 'List[TreeNode] consisting of trees with valid root values.'}]
+```json
+[
+    {
+        "class": "Game",
+        "attributes": [
+            {"name": "spaceship", "type": "Spaceship"},
+            {"name": "aliens", "type": "List[Alien]"},
+            {"name": "bullets", "type": "List[Bullet]"},
+            {"name": "score", "type": "int"},
+            {"name": "high_score", "type": "int"},
+            {"name": "lives", "type": "int"},
+            {"name": "level", "type": "int"},
+            {"name": "background_position", "type": "int"},
+            {"name": "is_paused", "type": "bool"},
+            {"name": "game_over", "type": "bool"},
+            {"name": "aliens_direction", "type": "int"}
+        ],
+        "methods": [
+            {
+                "name": "start_game",
+                "purpose": "Initialize game variables and start the game loop.",
+                "variables": {},
+                "return": "None"
+            },
+            {
+                "name": "update_game",
+                "purpose": "Update the game state for each frame.",
+                "variables": {},
+                "return": "None"
+            },
+            {
+                "name": "move_background",
+                "purpose": "Scroll the background image.",
+                "variables": {},
+                "return": "None"
+            },
+            {
+                "name": "check_collisions",
+                "purpose": "Check for collisions between bullets and aliens or spaceship.",
+                "variables": {},
+                "return": "None"
+            },
+            {
+                "name": "shoot_bullet",
+                "purpose": "Create a bullet from the spaceship's position.",
+                "variables": {},
+                "return": "None"
+            },
+            {
+                "name": "alien_move",
+                "purpose": "Move aliens and check if they've reached the spaceship.",
+                "variables": {},
+                "return": "None"
+            },
+            {
+                "name": "increase_score",
+                "purpose": "Increase the score when an alien is destroyed.",
+                "variables": {"points": "int"},
+                "return": "None"
+            },
+            {
+                "name": "decrease_life",
+                "purpose": "Decrease a life when the spaceship is hit or aliens reach it.",
+                "variables": {},
+                "return": "None"
+            },
+            {
+                "name": "check_game_over",
+                "purpose": "Determine if the game is over and set game_over flag.",
+                "variables": {},
+                "return": "None"
+            },
+            {
+                "name": "restart_game",
+                "purpose": "Restart the game by resetting the game state.",
+                "variables": {},
+                "return": "None"
+            },
+            {
+                "name": "pause_game",
+                "purpose": "Toggle the pause state of the game.",
+                "variables": {},
+                "return": "None"
+            },
+            {
+                "name": "exit_game",
+                "purpose": "Exit the game safely.",
+                "variables": {},
+                "return": "None"
+            },
+            {
+                "name": "save_high_score",
+                "purpose": "Write the high score to a file.",
+                "variables": {"filename": "str"},
+                "return": "None"
+            },
+            {
+                "name": "load_high_score",
+                "purpose": "Read the high score from a file.",
+                "variables": {"filename": "str"},
+                "return": "int"
+            },
+            {
+                "name": "display_scores",
+                "purpose": "Display the current score and high score.",
+                "variables": {},
+                "return": "None"
+            },
+            {
+                "name": "display_lives",
+                "purpose": "Display the remaining lives.",
+                "variables": {},
+                "return": "None"
+            },
+            {
+                "name": "display_level",
+                "purpose": "Display the current level.",
+                "variables": {},
+                "return": "None"
+            },
+            {
+                "name": "display_aliens_remaining",
+                "purpose": "Display the number of aliens remaining.",
+                "variables": {},
+                "return": "None"
+            },
+            {
+                "name": "play_background_music",
+                "purpose": "Play the background music on loop.",
+                "variables": {"music_file": "str"},
+                "return": "None"
+            },
+            {
+                "name": "play_sound_effect",
+                "purpose": "Play a specific sound effect.",
+                "variables": {"sound_file": "str"},
+                "return": "None"
+            },
+            {
+                "name": "update_aliens_direction",
+                "purpose": "Update the direction of aliens when they reach the screen edges.",
+                "variables": {},
+                "return": "None"
+            }
+        ]
+    },
+    {
+        "class": "Spaceship",
+        "attributes": [
+            {"name": "position", "type": "int"},
+            {"name": "lives", "type": "int"}
+        ],
+        "methods": [
+            {
+                "name": "move_left",
+                "purpose": "Move the spaceship to the left.",
+                "variables": {},
+                "return": "None"
+            },
+            {
+                "name": "move_right",
+                "purpose": "Move the spaceship to the right.",
+                "variables": {},
+                "return": "None"
+            },
+            {
+                "name": "shoot",
+                "purpose": "Shoot a bullet from the spaceship.",
+                "variables": {},
+                "return": "Bullet"
+            }
+        ]
+    },
+    {
+        "class": "Alien",
+        "attributes": [
+            {"name": "position", "type": "Tuple[int, int]"},
+            {"name": "is_alive", "type": "bool"}
+        ],
+        "methods": [
+            {
+                "name": "move",
+                "purpose": "Move the alien within the game.",
+                "variables": {},
+                "return": "None"
+            }
+        ]
+    },
+    {
+        "class": "Bullet",
+        "attributes": [
+            {"name": "position", "type": "Tuple[int, int]"},
+            {"name": "is_active", "type": "bool"}
+        ],
+        "methods": [
+            {
+                "name": "move",
+                "purpose": "Move the bullet upwards on the screen.",
+                "variables": {},
+                "return": "None"
+            }
+        ]
+    },
+    {
+        "function": "run",
+        "purpose": "Execute the main game loop, managing game states and transitions.",
+        "variables": {},
+        "return": "None"
+    }
+]
+```
 
