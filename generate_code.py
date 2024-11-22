@@ -32,7 +32,8 @@ if __name__ == "__main__":
     list_of_tasks = utils.parse_answer(design)
     for i, task in enumerate(list_of_tasks, start=1):
         print('Subproblem', i, task)
-        code = utils.function_coder(str(task))
+        current_code = utils.get_current_code()
+        code = utils.function_coder(current_code, str(task))
         print('Generated code:', code)
         utils.save_code_to_file(code)
         print('---------------')
@@ -46,7 +47,8 @@ if __name__ == "__main__":
         print('Additional tasks:', additional_tasks)
         for i, task in enumerate(additional_tasks, start=1):
             print('Subproblem', i, task)
-            code = utils.function_coder(str(task))
+            current_code = utils.get_current_code()
+            code = utils.function_coder(current_code, str(task))
             print('Generated code:', code)
             utils.save_code_to_file(code)
             print('---------------')

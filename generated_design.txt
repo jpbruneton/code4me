@@ -2,210 +2,104 @@
 [
     {
         "class": "Game",
+        "description": "Manages the overall game state and orchestrates all components of the game.",
         "attributes": [
-            {"name": "spaceship", "type": "Spaceship"},
-            {"name": "aliens", "type": "List[Alien]"},
-            {"name": "bullets", "type": "List[Bullet]"},
-            {"name": "score", "type": "int"},
-            {"name": "high_score", "type": "int"},
-            {"name": "lives", "type": "int"},
-            {"name": "level", "type": "int"},
-            {"name": "background_position", "type": "int"},
-            {"name": "is_paused", "type": "bool"},
-            {"name": "game_over", "type": "bool"},
-            {"name": "aliens_direction", "type": "int"}
+            {"name": "spaceship", "type": "Spaceship", "description": "The player's spaceship."},
+            {"name": "aliens", "type": "List[Alien]", "description": "List of current aliens in the game."},
+            {"name": "bullets", "type": "List[Bullet]", "description": "List of current bullets shot by the spaceship."},
+            {"name": "score", "type": "int", "description": "Current score of the game."},
+            {"name": "high_score", "type": "int", "description": "High score across all playthroughs."},
+            {"name": "lives", "type": "int", "description": "Number of lives remaining for the player."},
+            {"name": "level", "type": "int", "description": "Current level of the game."},
+            {"name": "background", "type": "Background", "description": "The scrolling background of the game."},
+            {"name": "sound_manager", "type": "SoundManager", "description": "Manages game sounds."},
+            {"name": "game_state", "type": "str", "description": "Current game state, e.g., 'start', 'running', 'paused', 'game_over'."},
+            {"name": "screen_width", "type": "int", "description": "Width of the game screen."},
+            {"name": "screen_height", "type": "int", "description": "Height of the game screen."}
         ],
         "methods": [
-            {
-                "name": "start_game",
-                "purpose": "Initialize game variables and start the game loop.",
-                "variables": {},
-                "return": "None"
-            },
-            {
-                "name": "update_game",
-                "purpose": "Update the game state for each frame.",
-                "variables": {},
-                "return": "None"
-            },
-            {
-                "name": "move_background",
-                "purpose": "Scroll the background image.",
-                "variables": {},
-                "return": "None"
-            },
-            {
-                "name": "check_collisions",
-                "purpose": "Check for collisions between bullets and aliens or spaceship.",
-                "variables": {},
-                "return": "None"
-            },
-            {
-                "name": "shoot_bullet",
-                "purpose": "Create a bullet from the spaceship's position.",
-                "variables": {},
-                "return": "None"
-            },
-            {
-                "name": "alien_move",
-                "purpose": "Move aliens and check if they've reached the spaceship.",
-                "variables": {},
-                "return": "None"
-            },
-            {
-                "name": "increase_score",
-                "purpose": "Increase the score when an alien is destroyed.",
-                "variables": {"points": "int"},
-                "return": "None"
-            },
-            {
-                "name": "decrease_life",
-                "purpose": "Decrease a life when the spaceship is hit or aliens reach it.",
-                "variables": {},
-                "return": "None"
-            },
-            {
-                "name": "check_game_over",
-                "purpose": "Determine if the game is over and set game_over flag.",
-                "variables": {},
-                "return": "None"
-            },
-            {
-                "name": "restart_game",
-                "purpose": "Restart the game by resetting the game state.",
-                "variables": {},
-                "return": "None"
-            },
-            {
-                "name": "pause_game",
-                "purpose": "Toggle the pause state of the game.",
-                "variables": {},
-                "return": "None"
-            },
-            {
-                "name": "exit_game",
-                "purpose": "Exit the game safely.",
-                "variables": {},
-                "return": "None"
-            },
-            {
-                "name": "save_high_score",
-                "purpose": "Write the high score to a file.",
-                "variables": {"filename": "str"},
-                "return": "None"
-            },
-            {
-                "name": "load_high_score",
-                "purpose": "Read the high score from a file.",
-                "variables": {"filename": "str"},
-                "return": "int"
-            },
-            {
-                "name": "display_scores",
-                "purpose": "Display the current score and high score.",
-                "variables": {},
-                "return": "None"
-            },
-            {
-                "name": "display_lives",
-                "purpose": "Display the remaining lives.",
-                "variables": {},
-                "return": "None"
-            },
-            {
-                "name": "display_level",
-                "purpose": "Display the current level.",
-                "variables": {},
-                "return": "None"
-            },
-            {
-                "name": "display_aliens_remaining",
-                "purpose": "Display the number of aliens remaining.",
-                "variables": {},
-                "return": "None"
-            },
-            {
-                "name": "play_background_music",
-                "purpose": "Play the background music on loop.",
-                "variables": {"music_file": "str"},
-                "return": "None"
-            },
-            {
-                "name": "play_sound_effect",
-                "purpose": "Play a specific sound effect.",
-                "variables": {"sound_file": "str"},
-                "return": "None"
-            },
-            {
-                "name": "update_aliens_direction",
-                "purpose": "Update the direction of aliens when they reach the screen edges.",
-                "variables": {},
-                "return": "None"
-            }
+            {"name": "start_game", "params": "self", "description": "Initialize game resources and enter initial game state."},
+            {"name": "pause_game", "params": "self", "description": "Pause the game if currently running."},
+            {"name": "resume_game", "params": "self", "description": "Resume the game if currently paused."},
+            {"name": "end_game", "params": "self", "description": "End the game and show the game-over screen."},
+            {"name": "restart_game", "params": "self", "description": "Restart the game by reinitializing relevant components."},
+            {"name": "update", "params": "self", "description": "Update the game state, including moving objects and collision detection."},
+            {"name": "draw", "params": "self", "description": "Draw all game elements on the screen."},
+            {"name": "exit", "params": "self", "description": "Safely exit the game."},
+            {"name": "load_high_score", "params": "self", "description": "Load the high score from a file."},
+            {"name": "save_high_score", "params": "self", "description": "Save the high score to a file."},
+            {"name": "check_collisions", "params": "self", "description": "Check for collisions between bullets and aliens, and take appropriate actions."},
+            {"name": "handle_input", "params": "self", "description": "Handle user input to control the spaceship and other game interactions."},
+            {"name": "update_score", "params": "self", "description": "Update the current score and handle score-related logic, such as display and incrementing."},
+            {"name": "update_aliens_remaining", "params": "self", "description": "Update the count of aliens remaining and handle related logic."}
         ]
     },
     {
         "class": "Spaceship",
+        "description": "Represents the player's spaceship in the game.",
         "attributes": [
-            {"name": "position", "type": "int"},
-            {"name": "lives", "type": "int"}
+            {"name": "position", "type": "Tuple[int, int]", "description": "Current position of the spaceship."},
+            {"name": "lives", "type": "int", "description": "Number of lives remaining for the spaceship."},
+            {"name": "bullet_cooldown", "type": "int", "description": "Cooldown time before the spaceship can shoot again."}
         ],
         "methods": [
-            {
-                "name": "move_left",
-                "purpose": "Move the spaceship to the left.",
-                "variables": {},
-                "return": "None"
-            },
-            {
-                "name": "move_right",
-                "purpose": "Move the spaceship to the right.",
-                "variables": {},
-                "return": "None"
-            },
-            {
-                "name": "shoot",
-                "purpose": "Shoot a bullet from the spaceship.",
-                "variables": {},
-                "return": "Bullet"
-            }
+            {"name": "move_left", "params": "self", "description": "Move the spaceship to the left."},
+            {"name": "move_right", "params": "self", "description": "Move the spaceship to the right."},
+            {"name": "shoot", "params": "self", "description": "Shoot a bullet, considering cooldown."}
         ]
     },
     {
         "class": "Alien",
+        "description": "Represents an alien enemy in the game.",
         "attributes": [
-            {"name": "position", "type": "Tuple[int, int]"},
-            {"name": "is_alive", "type": "bool"}
+            {"name": "position", "type": "Tuple[int, int]", "description": "Current position of the alien."},
+            {"name": "direction", "type": "str", "description": "Current moving direction, 'left' or 'right'."}
         ],
         "methods": [
-            {
-                "name": "move",
-                "purpose": "Move the alien within the game.",
-                "variables": {},
-                "return": "None"
-            }
+            {"name": "move", "params": "self", "description": "Move the alien in the set direction."},
+            {"name": "reverse_direction", "params": "self", "description": "Reverse the current direction of movement."}
         ]
     },
     {
         "class": "Bullet",
+        "description": "Represents a bullet shot by the spaceship.",
         "attributes": [
-            {"name": "position", "type": "Tuple[int, int]"},
-            {"name": "is_active", "type": "bool"}
+            {"name": "position", "type": "Tuple[int, int]", "description": "Current position of the bullet."},
+            {"name": "velocity", "type": "int", "description": "Speed of the bullet movement."}
         ],
         "methods": [
-            {
-                "name": "move",
-                "purpose": "Move the bullet upwards on the screen.",
-                "variables": {},
-                "return": "None"
-            }
+            {"name": "move", "params": "self", "description": "Move the bullet upwards."}
+        ]
+    },
+    {
+        "class": "Background",
+        "description": "Represents the game's scrolling background.",
+        "attributes": [
+            {"name": "scroll_position", "type": "int", "description": "Current position of the background scroll."}
+        ],
+        "methods": [
+            {"name": "scroll", "params": "self", "description": "Scroll the background, creating a loop effect."},
+            {"name": "draw", "params": "self", "description": "Draw the scrolling background on the game screen."}
+        ]
+    },
+    {
+        "class": "SoundManager",
+        "description": "Manages the sound effects and music for the game.",
+        "attributes": [],
+        "methods": [
+            {"name": "play_shoot_sound", "params": "self", "description": "Play the shooting sound effect."},
+            {"name": "play_destroy_sound", "params": "self", "description": "Play the alien destruction sound effect."},
+            {"name": "play_game_over_sound", "params": "self", "description": "Play the game over sound effect."},
+            {"name": "play_background_music", "params": "self", "description": "Play the looping background music."},
+            {"name": "pause_music", "params": "self", "description": "Pause the background music."},
+            {"name": "resume_music", "params": "self", "description": "Resume the background music."}
         ]
     },
     {
         "function": "run",
-        "purpose": "Execute the main game loop, managing game states and transitions.",
-        "variables": {},
-        "return": "None"
+        "description": "Main function to execute the game.",
+        "params": "",
+        "expected_return": "None"
     }
 ]
 ```

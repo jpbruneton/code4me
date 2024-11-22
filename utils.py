@@ -101,19 +101,24 @@ def concatenate_designs(design, critic):
     response = chat_with_gpt(concatenate_prompt)
     return response
 
-def function_coder(prompt, model="gpt-3.5-turbo"):
+def function_coder(current_code, prompt, model="gpt-3.5-turbo"):
     """
     Interact with ChatGPT to get a response for a given prompt.
     """
-    response = openai.ChatCompletion.create(
-        model=model,
-        messages=[
-            {"role": "system", "content": "You are a helpful assistant for programming tasks in Python. "
-                                          "You return only the function as described in the prompt with no additional comments."},
-            {"role": "user", "content": prompt},
-        ]
-    )
-    return response['choices'][0]['message']['content']
+    function_prompt = f"""
+    You are a programmer writing code for a specific function. The code you write should be a Python function or method within a class.
+    The current code is as follows:
+    {current_code}
+    The task is as follows: you have to add a function or method to the code that will achieve the following goal:
+    {prompt}
+    Only return code without any extra comments. Make sure the code is correctly formatted and indented in particular 
+    if its a method for a class that is being added. You cant change the existing code, only add new code.
+    You can't pass or say "add speficic logic for function_name", you have to write the code.
+    """
+    response = chat_with_gpt(function_prompt, model=model)
+    return response
+
+
 
 def global_review(initial_prompt):
     current_code = get_current_code()
@@ -163,6 +168,8 @@ def parse_answer(answer):
     """
     if 'json' in answer:
         answer = str(answer[7:-3])
+    if 'python' in answer:
+        answer = str(answer[9:-3])
     try:
         return ast.literal_eval(answer)
     except Exception as e:
