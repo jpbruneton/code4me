@@ -8,4 +8,4 @@ Displayed example : coding from scratch a space invador game
 
 ## Just for the fun :)
 
-# Ref : https://github.com/Significant-Gravitas/AutoGPT
+See also : https://github.com/Significant-Gravitas/AutoGPT
