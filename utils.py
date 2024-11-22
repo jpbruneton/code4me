@@ -6,8 +6,8 @@ openai.api_key = openai_apikey.api_key
 assert openai.api_key != "your_api_key", "Please set your OpenAI API key in the `openai.api_key` variable"
 
 # File to save the generated code
-OUTPUT_CODE_FILE = "generated_code.py"
-OUTPUT_DESIGN_FILE = "generated_design.txt"
+OUTPUT_CODE_FILE = "generated_scripts/generated_code.py"
+OUTPUT_DESIGN_FILE = "generated_scripts/generated_design.txt"
 
 def chat_with_gpt(prompt, model="gpt-4o"):
     """
@@ -113,9 +113,31 @@ def function_coder(current_code, prompt, model="gpt-3.5-turbo"):
     {prompt}
     Only return code without any extra comments. Make sure the code is correctly formatted and indented in particular 
     if its a method for a class that is being added. You cant change the existing code, only add new code.
-    You can't pass or say "add speficic logic for function_name", you have to write the code.
+    You can't pass or say "add speficic logic for function_name", you have to write the code. 
+    You may add comments inside the code or docstrings to explain the function purpose.
     """
     response = chat_with_gpt(function_prompt, model=model)
+    return response
+
+
+def improve_yourself(initial_prompt, current_code):
+    """
+    Use a critic to evaluate the alignment of the initial prompt with the current code.
+    """
+    improve = f"""
+    You are a critic evaluating programming tasks.
+
+    The user provided this goal: "{initial_prompt}".
+
+    Here is the code so far:
+
+    {current_code}
+    Rewrite everything, change order if need be, add functions or delete ones, but build a better version of the current code to achieve the goal.
+    Fill in methods or functions that are not implemented yet. Return only the code, no extra comments before or after,
+    but you may add comments inside the code or docstrings to explain the function purpose. If you have a limit on the number of characters,
+    then you can just return the code that is modified or added. Again, Return only the NEW code, no extra comments before or after, 
+    but drop the old one"""
+    response = chat_with_gpt(improve)
     return response
 
 
@@ -148,18 +170,34 @@ def save_design_to_file(content, file_path=OUTPUT_DESIGN_FILE):
         file.write(content)
         file.write("\n\n")
 
-def get_current_code():
-    with open("generated_code.py", "r") as file:
-        current_code = file.read()
+def get_current_code(version=None):
+    if version is None:
+        with open("generated_scripts/generated_code.py", "r") as file:
+            current_code = file.read()
+    else:
+        with open(f"generated_scripts/generated_code_iteration{version}.py", "r") as file:
+            current_code = file.read()
     return current_code
 
 def erase_current_code():
-    with open("generated_code.py", "w") as file:
+    with open("generated_scripts/generated_code.py", "w") as file:
         file.write("")
 
 def erase_current_design():
-    with open("generated_design.txt", "w") as file:
+    with open("generated_scripts/generated_design.txt", "w") as file:
         file.write("")
+
+def parse_code_output(code_output):
+    """
+    Parse the code output from the GPT-3 response.
+    """
+    if 'json' in code_output:
+        answer = str(code_output[7:-3])
+    elif 'python' in code_output:
+        answer = str(code_output[9:-3])
+    else:
+        answer = code_output if type(code_output) == str else str(code_output)
+    return answer
 
 def parse_answer(answer):
     """

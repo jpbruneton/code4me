@@ -1,6 +1,9 @@
 import utils
-
+import os
 if __name__ == "__main__":
+    # create the folder generated_scripts/
+    os.mkdir('generated_scripts')
+
     initial_prompt = ("code a space invader game from scratch. The game should have a spaceship that can move left and right,"
                       " shoot bullets, and destroy the aliens. The aliens should move left and right, and when they reach the "
                       "spaceship, the game should end. The game should have a score that increases when the spaceship destroys an alien."
@@ -20,9 +23,10 @@ if __name__ == "__main__":
 
     design = utils.designer(initial_prompt)
     print('first design:', type(design), design)
-    critic = utils.critic_design(initial_prompt, design)
-    print('critic:', critic)
-    design = utils.concatenate_designs(design, critic)
+    for _ in range(2):
+        critic = utils.critic_design(initial_prompt, design)
+        print('critic:', critic)
+        design = utils.concatenate_designs(design, critic)
 
     print('final design:', design)
     print('---------------')
@@ -34,6 +38,7 @@ if __name__ == "__main__":
         print('Subproblem', i, task)
         current_code = utils.get_current_code()
         code = utils.function_coder(current_code, str(task))
+        code = utils.parse_code_output(code)
         print('Generated code:', code)
         utils.save_code_to_file(code)
         print('---------------')
@@ -49,6 +54,16 @@ if __name__ == "__main__":
             print('Subproblem', i, task)
             current_code = utils.get_current_code()
             code = utils.function_coder(current_code, str(task))
+            code = utils.parse_code_output(code)
             print('Generated code:', code)
             utils.save_code_to_file(code)
             print('---------------')
+
+    from time import sleep
+    for i in range(10):
+        print('iteration i:', i)
+        version = None if i == 0 else i - 1
+        answer = utils.improve_yourself(initial_prompt, utils.get_current_code(version=version))
+        answer = utils.parse_code_output(answer)
+        utils.save_code_to_file(answer, file_path=f'generated_code_iteration{i}.py')
+        sleep(10)
