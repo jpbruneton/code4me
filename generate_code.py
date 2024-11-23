@@ -15,20 +15,19 @@ def main(model, initial_prompt, design_iterations, project_name, folder_name='ge
     # delete everything in the folder
     #input('Press enter to delete everything in the folder')
     #os.system(f"rm -r {folder_name}/*")
-    if False:
-        utils.erase_current_code(folder_name)
-        utils.erase_current_design(folder_name)
+    utils.erase_current_code(folder_name)
+    utils.erase_current_design(folder_name)
 
-        design = utils.designer(initial_prompt, model)
-        print('first design:', type(design), design)
-        for _ in range(design_iterations):
-            critic = utils.critic_design(initial_prompt, design, model)
-            print('critic:', critic)
-            design = utils.concatenate_designs(design, critic, model)
-            sleep(10)
-        print('final design:', design)
-        print('---------------')
-        utils.save_design_to_file(design, folder_name)
+    design = utils.designer(initial_prompt, model)
+    print('first design:', type(design), design)
+    for _ in range(design_iterations):
+        critic = utils.critic_design(initial_prompt, design, model)
+        print('critic:', critic)
+        design = utils.concatenate_designs(design, critic, model)
+        sleep(10)
+    print('final design:', design)
+    print('---------------')
+    utils.save_design_to_file(design, folder_name)
     #load design from file
     with open(f'{folder_name}/generated_design.txt', 'r') as file:
         design = file.read()
@@ -47,7 +46,7 @@ def main(model, initial_prompt, design_iterations, project_name, folder_name='ge
         code = utils.parse_code_output(code)
         print('Generated code:', code)
         utils.save_code_to_file(code, file_path)
-        sleep(60)
+        sleep(20)
         print('---------------')
 
     for i in range(5):
