@@ -1,0 +1,267 @@
+```json
+[
+    {
+        "class": "Settings",
+        "attributes": [
+            {"name": "screen_width", "type": "int"},
+            {"name": "screen_height", "type": "int"},
+            {"name": "spaceship_speed", "type": "int"},
+            {"name": "alien_initial_speed", "type": "int"},
+            {"name": "alien_speed_increment", "type": "int"},
+            {"name": "bullet_speed", "type": "int"}
+        ],
+        "methods": [
+            {
+                "name": "__init__",
+                "purpose": "Initialize game settings and constants."
+            }
+        ]
+    },
+    {
+        "class": "Game",
+        "attributes": [
+            {"name": "spaceship", "type": "Spaceship"},
+            {"name": "aliens", "type": "list[Alien]"},
+            {"name": "alien_bullets", "type": "list[Bullet]"},
+            {"name": "score", "type": "int"},
+            {"name": "high_score", "type": "int"},
+            {"name": "level", "type": "int"},
+            {"name": "lives", "type": "int"},
+            {"name": "paused", "type": "bool"},
+            {"name": "game_over", "type": "bool"},
+            {"name": "graphics", "type": "dict[str, Any]"},
+            {"name": "settings", "type": "Settings"}
+        ],
+        "methods": [
+            {
+                "name": "__init__",
+                "purpose": "Initialize the game state with default values."
+            },
+            {
+                "name": "start_screen",
+                "purpose": "Display the start screen and wait for the user to start the game."
+            },
+            {
+                "name": "game_over_screen",
+                "purpose": "Display the game over screen and offer the option to restart."
+            },
+            {
+                "name": "reset",
+                "purpose": "Reset the game to its initial state without closing the application."
+            },
+            {
+                "name": "restart_level",
+                "purpose": "Restart the current level, resetting the aliens and spaceship state without altering the score or lives."
+            },
+            {
+                "name": "pause",
+                "purpose": "Toggle the paused state of the game."
+            },
+            {
+                "name": "update",
+                "purpose": "Update the game state, including spaceship, aliens, collisions, and score."
+            },
+            {
+                "name": "draw",
+                "purpose": "Draw all game elements on screen, including spaceship, aliens, score, etc."
+            },
+            {
+                "name": "run",
+                "purpose": "Main loop to execute the game, manage timing, and handle exits."
+            },
+            {
+                "name": "check_collisions",
+                "purpose": "Check for collisions between bullets and aliens, update score and alien state."
+            },
+            {
+                "name": "check_spaceship_collision",
+                "purpose": "Check if any alien bullet collided with the spaceship and update its state accordingly.",
+                "variables": [
+                    {"name": "spaceship", "type": "Spaceship"},
+                    {"name": "alien_bullets", "type": "list[Bullet]"}
+                ],
+                "return_value": "None"
+            },
+            {
+                "name": "save_high_score",
+                "purpose": "Save the high score to a file."
+            },
+            {
+                "name": "load_high_score",
+                "purpose": "Load the high score from a file."
+            },
+            {
+                "name": "adjust_position",
+                "purpose": "Align alien movement when reaching screen edges to prevent abrupt shifts."
+            },
+            {
+                "name": "input_handler",
+                "purpose": "Process user input to control spaceship movement, shooting, pausing, and exiting the game."
+            },
+            {
+                "name": "load_graphics",
+                "purpose": "Load placeholder graphics for spaceship, aliens, and bullets."
+            },
+            {
+                "name": "update_level",
+                "purpose": "Increase level when all aliens on the screen are destroyed, possibly altering alien speed."
+            },
+            {
+                "name": "alien_descend_and_check_game_over",
+                "purpose": "Make aliens descend after reaching the edge and check if they reach the spaceship to end the game."
+            },
+            {
+                "name": "check_bullet_hits_spaceship",
+                "purpose": "Determine if any bullet hits the spaceship and decrease its lives."
+            },
+            {
+                "name": "update_alien_bullets",
+                "purpose": "Update the positions and state of alien bullets."
+            },
+            {
+                "name": "manage_graphics",
+                "purpose": "Handle updating graphics and animations smoothly."
+            },
+            {
+                "name": "serialize_game_state",
+                "purpose": "Serialize the game state for pause and resume functionality."
+            },
+            {
+                "name": "deserialize_game_state",
+                "purpose": "Deserialize the game state to resume functionality."
+            },
+            {
+                "name": "retry_logic",
+                "purpose": "Allow players to retry from the last level or restart the entire game."
+            },
+            {
+                "name": "increase_difficulty",
+                "purpose": "Increase game difficulty parameters such as alien speed and descending rate as levels progress.",
+                "variables": [
+                    {"name": "level", "type": "int"}
+                ],
+                "return_value": "None"
+            }
+        ]
+    },
+    {
+        "class": "Spaceship",
+        "attributes": [
+            {"name": "position", "type": "tuple[int, int]"},
+            {"name": "bullets", "type": "list[Bullet]"}
+        ],
+        "methods": [
+            {
+                "name": "__init__",
+                "purpose": "Initialize the spaceship with a default position and empty bullet list."
+            },
+            {
+                "name": "move",
+                "purpose": "Change the spaceship's position based on input (left or right)."
+            },
+            {
+                "name": "shoot",
+                "purpose": "Fire a bullet from the spaceship's current position."
+            },
+            {
+                "name": "draw",
+                "purpose": "Draw the spaceship at its current position."
+            }
+        ]
+    },
+    {
+        "class": "Alien",
+        "attributes": [
+            {"name": "position", "type": "tuple[int, int]"},
+            {"name": "alive", "type": "bool"},
+            {"name": "alien_type", "type": "str"},
+            {"name": "speed", "type": "int"}
+        ],
+        "methods": [
+            {
+                "name": "__init__",
+                "purpose": "Initialize an alien at a given position, marked as alive with a type and speed."
+            },
+            {
+                "name": "move",
+                "purpose": "Update the alien's position, moving horizontally and possibly descending."
+            },
+            {
+                "name": "draw",
+                "purpose": "Draw the alien at its current position if it is alive."
+            },
+            {
+                "name": "alien_shoot",
+                "purpose": "Implement alien shooting random bullets towards the spaceship."
+            }
+        ]
+    },
+    {
+        "class": "Bullet",
+        "attributes": [
+            {"name": "position", "type": "tuple[int, int]"},
+            {"name": "active", "type": "bool"}
+        ],
+        "methods": [
+            {
+                "name": "__init__",
+                "purpose": "Initialize a bullet at a given position, marked as active."
+            },
+            {
+                "name": "move",
+                "purpose": "Update the bullet's position, moving it upwards on screen."
+            },
+            {
+                "name": "draw",
+                "purpose": "Draw the bullet at its current position if it is active."
+            },
+            {
+                "name": "deactivate_if_out_of_bounds",
+                "purpose": "Deactivate the bullet if it exits the screen."
+            }
+        ]
+    },
+    {
+        "function": "handle_events",
+        "purpose": "Manage input events such as keyboard presses for spaceship movement, shooting, pausing, and exiting.",
+        "variables": [
+            {"name": "events", "type": "list[Any]"}
+        ],
+        "return_value": "None"
+    },
+    {
+        "function": "remove_inactive_bullets",
+        "purpose": "Remove bullets from the spaceship and alien bullet list if they are inactive or out of bounds to optimize performance.",
+        "variables": [],
+        "return_value": "None"
+    },
+    {
+        "function": "update_bullets",
+        "purpose": "Update the positions of all active bullets and handle collision detection with aliens.",
+        "variables": [
+            {"name": "bullets", "type": "list[Bullet]"},
+            {"name": "aliens", "type": "list[Alien]"}
+        ],
+        "return_value": "None"
+    },
+    {
+        "function": "initialize_aliens",
+        "purpose": "Set up the initial positions and states of all aliens for a new level.",
+        "variables": [],
+        "return_value": "list[Alien]"
+    },
+    {
+        "function": "display_stats",
+        "purpose": "Render the current score, high score, level, number of lives, and remaining aliens on the screen.",
+        "variables": [
+            {"name": "score", "type": "int"},
+            {"name": "high_score", "type": "int"},
+            {"name": "level", "type": "int"},
+            {"name": "lives", "type": "int"},
+            {"name": "num_aliens", "type": "int"}
+        ],
+        "return_value": "None"
+    }
+]
+```
+
