@@ -3,16 +3,14 @@ import openai_apikey
 import json
 import ast
 import re
+import os
 # Set up the OpenAI API key
 openai.api_key = openai_apikey.api_key
 assert openai.api_key != "your_api_key", "Please set your OpenAI API key in the `openai.api_key` variable"
 
-def define_paths(folder_name):
-    # File to save the generated code
-    OUTPUT_CODE_FILE = "folder_name/generated_code.py"
-    OUTPUT_DESIGN_FILE = "folder_name/generated_design.txt"
-    return OUTPUT_CODE_FILE, OUTPUT_DESIGN_FILE
-
+def make_directory(folder_name):
+    if not os.path.exists(project_name):
+        os.mkdir(project_name)
 
 def chat_with_gpt(prompt, model):
     """
@@ -162,11 +160,11 @@ def improve_code(initial_prompt, current_code, model):
     return response
 
 
-def save_code_to_file(content, file_path):
+def save_code_to_file(content, filepath):
     """
     Save content to a file.
     """
-    with open(file_path, "a") as file:
+    with open(filepath, "a") as file:
         file.write(content)
         file.write("\n\n")
 

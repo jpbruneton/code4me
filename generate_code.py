@@ -2,19 +2,13 @@ import utils
 import os
 from time import sleep
 
-# sleep is necessary to avoid the rate limit of the API
 
 def main(model, initial_prompt, design_iterations, project_name, folder_name='generated_scripts'):
-    # join path
-    if not os.path.exists(project_name):
-        os.mkdir(project_name)
-    folder_name = os.path.join(project_name, folder_name)
-    if not os.path.exists(folder_name):
-        os.mkdir(folder_name)
 
-    # delete everything in the folder
-    #input('Press enter to delete everything in the folder')
-    #os.system(f"rm -r {folder_name}/*")
+    utils.make_directory(project_name)
+    folder_name = os.path.join(project_name, folder_name)
+    utils.make_directory(folder_name)
+
     utils.erase_current_code(folder_name)
     utils.erase_current_design(folder_name)
 
@@ -28,10 +22,6 @@ def main(model, initial_prompt, design_iterations, project_name, folder_name='ge
     print('final design:', design)
     print('---------------')
     utils.save_design_to_file(design, folder_name)
-    #load design from file
-    with open(f'{folder_name}/generated_design.txt', 'r') as file:
-        design = file.read()
-    file_path = f"{folder_name}/generated_code.py"
 
     # now code each subproblem in the design
     list_of_tasks = utils.parse_answer(design)
@@ -45,17 +35,19 @@ def main(model, initial_prompt, design_iterations, project_name, folder_name='ge
             code = utils.function_coder(current_code, str(task))
         code = utils.parse_code_output(code)
         print('Generated code:', code)
-        utils.save_code_to_file(code, file_path)
+        filepath = f'{folder_name}/generated_code_iteration0.py'
+        utils.save_code_to_file(code, filepath)
         sleep(20)
         print('---------------')
 
-    for i in range(5):
+    for i in range(1, 6):
         print('iteration i:', i)
-        version = None if i == 0 else i - 1
+        version = i - 1
         answer = utils.improve_code(initial_prompt, utils.get_current_code(folder_name, version=version), model)
         answer = utils.parse_code_output(answer)
-        utils.save_code_to_file(answer, file_path=f'{folder_name}/generated_code_iteration{i}.py')
-        sleep(10)
+        filepath = f'{folder_name}/generated_code_iteration{i}.py'
+        utils.save_code_to_file(answer, filepath)
+        sleep(20)
 
 if __name__ == "__main__":
 
