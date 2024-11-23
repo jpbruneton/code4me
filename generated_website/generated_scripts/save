@@ -1,0 +1,320 @@
+```json
+[
+    {
+        "class": "Title",
+        "attributes": [
+            {"name": "id", "type": "int"},
+            {"name": "name", "type": "str"},
+            {"name": "rankings", "type": "list[int]"},
+            {"name": "reviews", "type": "list[str]"}
+        ],
+        "methods": [
+            {"name": "add_ranking", "purpose": "Add a ranking to the title", "parameters": ["ranking: int"], "returns": "None"},
+            {"name": "add_review", "purpose": "Add a review to the title", "parameters": ["review: str"], "returns": "None"},
+            {"name": "average_ranking", "purpose": "Calculate the average ranking for the title", "parameters": [], "returns": "float"}
+        ]
+    },
+    {
+        "class": "DatabaseConnectionObject",
+        "purpose": "Represents a connection to the database",
+        "attributes": [
+            {"name": "connection", "type": "Connection"}
+        ],
+        "methods": [
+            {"name": "execute_query", "purpose": "Execute a database query", "parameters": ["query: str", "parameters: tuple"], "returns": "ResultSet"},
+            {"name": "commit", "purpose": "Commit the current transaction", "parameters": [], "returns": "None"},
+            {"name": "close", "purpose": "Close the database connection", "parameters": [], "returns": "None"}
+        ]
+    },
+    {
+        "class": "FileUpload",
+        "attributes": [
+            {"name": "file", "type": "Binary"}
+        ],
+        "methods": [
+            {"name": "upload_file", "purpose": "Upload a file and return status or URL", "parameters": [], "returns": "bool or str"},
+            {"name": "validate_file_type", "purpose": "Validate the file type before uploading", "parameters": ["file_type: str"], "returns": "bool"}
+        ]
+    },
+    {
+        "class": "ErrorHandler",
+        "purpose": "Customize error handling for database errors",
+        "attributes": [
+            {"name": "error_code", "type": "int"},
+            {"name": "error_message", "type": "str"}
+        ],
+        "methods": [
+            {"name": "generate_user_message", "purpose": "Generate a user-friendly error message", "parameters": [], "returns": "str"}
+        ]
+    },
+    {
+        "class": "TitleSearchService",
+        "purpose": "Encapsulates search functionalities for titles",
+        "methods": [
+            {"name": "search_by_name", "purpose": "Search for titles based on name", "parameters": ["name: str"], "returns": "list[Title]"},
+            {"name": "search_by_criteria", "purpose": "Search using various criteria such as ranking, review count", "parameters": ["criteria: dict"], "returns": "list[Title]"}
+        ]
+    },
+    {
+        "class": "UserInterface",
+        "purpose": "Manage the frontend logic and user interactivity",
+        "methods": [
+            {"name": "render_title_list", "purpose": "Render the list of titles on the UI", "parameters": ["titles: list[Title]"], "returns": "None"},
+            {"name": "render_title_details", "purpose": "Display the details and reviews of a selected title", "parameters": ["title_id: int"], "returns": "None"}
+        ]
+    },
+    {
+        "class": "HTTPRequestHandler",
+        "purpose": "Encapsulate and handle incoming and outgoing HTTP requests in the server",
+        "attributes": [
+            {"name": "method", "type": "str"},
+            {"name": "url", "type": "str"},
+            {"name": "headers", "type": "dict"},
+            {"name": "body", "type": "dict"}
+        ],
+        "methods": [
+            {"name": "process", "purpose": "Process the HTTP request", "parameters": [], "returns": "HttpResponse"}
+        ]
+    },
+    {
+        "class": "UserSessionManager",
+        "purpose": "Manage user sessions for retaining state across multiple requests",
+        "attributes": [
+            {"name": "session_id", "type": "str"},
+            {"name": "data", "type": "dict"}
+        ],
+        "methods": [
+            {"name": "validate_session", "purpose": "Validate the current session", "parameters": [], "returns": "bool"}
+        ]
+    },
+    {
+        "function": "generate_title_id",
+        "purpose": "Generate a unique ID for new titles",
+        "parameters": [],
+        "returns": "int"
+    },
+    {
+        "function": "calculate_average_ranking",
+        "purpose": "Calculate the average ranking for a list of rankings",
+        "parameters": ["rankings: list[int]"],
+        "returns": "float"
+    },
+    {
+        "function": "calculate_mode_ranking",
+        "purpose": "Calculate the mode ranking, useful for identifying the most common user rating.",
+        "parameters": ["rankings: list[int]"],
+        "returns": "int"
+    },
+    {
+        "function": "calculate_median_ranking",
+        "purpose": "Calculate the median ranking for a list of rankings, for a more robust ranking metric",
+        "parameters": ["rankings: list[int]"],
+        "returns": "float"
+    },
+    {
+        "function": "create_title",
+        "purpose": "Create a new title and add it to the database",
+        "parameters": ["name: str"],
+        "returns": "Title"
+    },
+    {
+        "function": "get_title",
+        "purpose": "Retrieve a title by ID from the database",
+        "parameters": ["title_id: int"],
+        "returns": "Title"
+    },
+    {
+        "function": "get_all_titles",
+        "purpose": "Retrieve all titles from the database",
+        "parameters": [],
+        "returns": "list[Title]"
+    },
+    {
+        "function": "update_title",
+        "purpose": "Update the details of an existing title",
+        "parameters": ["title_id: int", "new_name: str"],
+        "returns": "bool"
+    },
+    {
+        "function": "delete_title",
+        "purpose": "Delete a title from the database by ID",
+        "parameters": ["title_id: int"],
+        "returns": "bool"
+    },
+    {
+        "function": "search_titles",
+        "purpose": "Search titles by name",
+        "parameters": ["query: str"],
+        "returns": "list[Title]"
+    },
+    {
+        "function": "search_titles_by_review_content",
+        "purpose": "Search titles based on the content of reviews for certain keywords.",
+        "parameters": ["keyword: str"],
+        "returns": "list[Title]"
+    },
+    {
+        "function": "add_ranking_to_title",
+        "purpose": "Assign a ranking to a specific title",
+        "parameters": ["title_id: int", "ranking: int"],
+        "returns": "bool"
+    },
+    {
+        "function": "delete_ranking_from_title",
+        "purpose": "Allow users to delete a specific ranking from a title.",
+        "parameters": ["title_id: int", "ranking_index: int"],
+        "returns": "bool"
+    },
+    {
+        "function": "add_review_to_title",
+        "purpose": "Add a review to a specific title",
+        "parameters": ["title_id: int", "review: str"],
+        "returns": "bool"
+    },
+    {
+        "function": "delete_review_from_title",
+        "purpose": "Provide functionality to delete a specific review from a title.",
+        "parameters": ["title_id: int", "review_index: int"],
+        "returns": "bool"
+    },
+    {
+        "function": "update_ranking_for_title",
+        "purpose": "Update the ranking for a specific title by recalculating the average",
+        "parameters": ["title_id: int"],
+        "returns": "bool"
+    },
+    {
+        "function": "update_review_for_title",
+        "purpose": "Update a review for a title based on a specific index.",
+        "parameters": ["title_id: int", "review_index: int", "new_review: str"],
+        "returns": "bool"
+    },
+    {
+        "function": "ensure_title_exists",
+        "purpose": "Check if a title with a given ID exists in the database",
+        "parameters": ["title_id: int"],
+        "returns": "bool"
+    },
+    {
+        "function": "calculate_reviewer_impact",
+        "purpose": "Weigh reviews by reviewer reputation or frequency to improve ranking accuracy",
+        "parameters": ["reviews: list[dict]"],
+        "returns": "float"
+    },
+    {
+        "function": "verify_data_integrity",
+        "purpose": "Ensure data integrity by checking for duplicates or inconsistencies",
+        "parameters": ["data: dict"],
+        "returns": "bool"
+    },
+    {
+        "function": "calculate_review_sentiment",
+        "purpose": "Analyze review text to determine whether sentiments are positive, negative, or neutral",
+        "parameters": ["review_text: str"],
+        "returns": "str"
+    },
+    {
+        "function": "validate_title_name",
+        "purpose": "Ensure that a title name is valid and doesn't contain restricted words or exceeds character limits.",
+        "parameters": ["name: str"],
+        "returns": "bool"
+    },
+    {
+        "function": "initialize_database",
+        "purpose": "Set up the database with initial configuration",
+        "parameters": [],
+        "returns": "None"
+    },
+    {
+        "function": "connect_to_database",
+        "purpose": "Establish a connection to the database",
+        "parameters": [],
+        "returns": "DatabaseConnectionObject"
+    },
+    {
+        "function": "optimize_query_performance",
+        "purpose": "Improve database query performance using indexing or caching strategies",
+        "parameters": ["query: str"],
+        "returns": "None"
+    },
+    {
+        "function": "deploy_on_aws",
+        "purpose": "Deploy the application to an AWS instance",
+        "parameters": ["aws_credentials: dict", "instance_configuration: dict"],
+        "returns": "None"
+    },
+    {
+        "function": "verify_aws_deployment",
+        "purpose": "Check if the AWS deployment is successful and operational",
+        "parameters": ["deployment_info: dict"],
+        "returns": "bool"
+    },
+    {
+        "function": "handle_user_requests",
+        "purpose": "Handle user requests to RESTful APIs for CRUD operations",
+        "parameters": [],
+        "returns": "None"
+    },
+    {
+        "function": "handle_batch_requests",
+        "purpose": "Process batch requests to handle multiple operations efficiently",
+        "parameters": ["requests: list[dict]"],
+        "returns": "list[HttpResponse]"
+    },
+    {
+        "function": "paginate_titles",
+        "purpose": "Pagination for large title datasets",
+        "parameters": ["page_number: int", "page_size: int"],
+        "returns": "list[Title]"
+    },
+    {
+        "function": "list_most_recent_titles",
+        "purpose": "Get the most recently added titles.",
+        "parameters": ["limit: int"],
+        "returns": "list[Title]"
+    },
+    {
+        "function": "sort_titles_by_ranking",
+        "purpose": "Sort titles by their average ranking",
+        "parameters": ["titles: list[Title]"],
+        "returns": "list[Title]"
+    },
+    {
+        "function": "sort_titles_by_review_count",
+        "purpose": "Sort the titles based on the number of reviews, useful for discovering popularly reviewed items.",
+        "parameters": ["titles: list[Title]"],
+        "returns": "list[Title]"
+    },
+    {
+        "function": "sort_titles_alphabetically",
+        "purpose": "Sort titles alphabetically",
+        "parameters": ["titles: list[Title]"],
+        "returns": "list[Title]"
+    },
+    {
+        "function": "generate_search_suggestions",
+        "purpose": "Provide real-time search suggestions based on current title entries.",
+        "parameters": ["query: str"],
+        "returns": "list[str]"
+    },
+    {
+        "function": "handle_cors_issues",
+        "purpose": "Handle Cross-Origin Resource Sharing (CORS) issues",
+        "parameters": [],
+        "returns": "None"
+    },
+    {
+        "function": "translate_frontend_to_backend",
+        "purpose": "Translate frontend actions to backend API calls",
+        "parameters": ["action: str", "data: dict"],
+        "returns": "HttpResponse or dict"
+    },
+    {
+        "function": "run",
+        "purpose": "Run the server and set up routes to handle requests",
+        "parameters": [],
+        "returns": "None"
+    }
+]
+```
+
