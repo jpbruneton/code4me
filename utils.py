@@ -1,15 +1,20 @@
 import openai
-import ast
 import openai_apikey
+import json
+import ast
+import re
 # Set up the OpenAI API key
 openai.api_key = openai_apikey.api_key
 assert openai.api_key != "your_api_key", "Please set your OpenAI API key in the `openai.api_key` variable"
 
-# File to save the generated code
-OUTPUT_CODE_FILE = "generated_scripts/generated_code.py"
-OUTPUT_DESIGN_FILE = "generated_scripts/generated_design.txt"
+def define_paths(folder_name):
+    # File to save the generated code
+    OUTPUT_CODE_FILE = "folder_name/generated_code.py"
+    OUTPUT_DESIGN_FILE = "folder_name/generated_design.txt"
+    return OUTPUT_CODE_FILE, OUTPUT_DESIGN_FILE
 
-def chat_with_gpt(prompt, model="gpt-4o"):
+
+def chat_with_gpt(prompt, model):
     """
     Interact with ChatGPT to get a response for a given prompt.
     """
@@ -23,7 +28,7 @@ def chat_with_gpt(prompt, model="gpt-4o"):
     return response['choices'][0]['message']['content']
 
 
-def designer(initial_prompt):
+def designer(initial_prompt, model):
     """
     Use ChatGPT to break down the goal into subproblems.
     """
@@ -39,122 +44,125 @@ def designer(initial_prompt):
     f"The overall task is as follows:\n\n{initial_prompt}"
     )
 
-    response = chat_with_gpt(breakdown_prompt)
+    response = chat_with_gpt(breakdown_prompt, model)
     return response
 
-def critic_design(initial_prompt, current_design):
+def critic_design(initial_prompt, current_design, model):
     """
     Use a critic to evaluate the alignment of the initial prompt with the current design.
     """
-    critic_prompt = f"""
-    You are a critic evaluating programming tasks.
+    critic_prompt = (
+        f"You are a programming critic tasked with evaluating the design of a project.\n\n"
+        f"The user's goal is as follows: \"{initial_prompt}\".\n\n"
+        f"The current design is:\n\n{current_design}\n\n"
+        f"Evaluate whether this design sufficiently addresses the user's goal.\n\n"
+        f"If the design is complete and effectively decomposes the problem into smaller, manageable components, "
+        f"respond only with 'the design is okay as is' and nothing else.\n\n"
+        f"If the design is incomplete, provide a detailed list of additional functions, methods, or data structures "
+        f"necessary to fully achieve the user's goal. Include the following for each suggestion:\n"
+        f"  - Purpose of the function or data structure.\n"
+        f"  - Variables and their types.\n"
+        f"  - Expected return value.\n\n"
+        f"Present your response as a list of dictionaries in the format starting with [ and ending with ], "
+        f"with no additional comments or explanations."
+    )
 
-    The user provided this goal: "{initial_prompt}".
-
-    Here is the current design:
-
-    {current_design}
-
-    Evaluate if this design and split of the main problem into smaller problems will be enough to achieve the goal.
-    If yes, just return 'the design is ok as is' and nothing else. 
-    If not, suggest more functions and/or data structures to do so. Provide the response as a list of dictionaries,"
-    f" that must be starting with [, ending with ] with no additional comments.
-    """
-    response = chat_with_gpt(critic_prompt)
-    return response
-
-def critic_review(initial_prompt, current_code):
-    """
-    Use a critic to evaluate the alignment of the initial prompt with the current code.
-    """
-    critic_prompt = f"""
-    You are a critic evaluating programming tasks.
-
-    The user provided this goal: "{initial_prompt}".
-
-    Here is the code so far:
-
-    {current_code}
-
-    Evaluate if this code meets the goal, especially if it can run as is to achieve the goal.
-    If yes, just return 'Yes' and nothing else. 
-    If not, suggest additional functions to do so. Provide the response as a list of dictionaries,"
-    f" that must be starting with [, ending with ] with no additional comments.
-    """
-    response = chat_with_gpt(critic_prompt)
+    response = chat_with_gpt(critic_prompt, model)
     return response
 
 
-def concatenate_designs(design, critic):
+def concatenate_designs(design, critic, model):
     """
     Concatenate the initial design with the critic's suggestions.
     """
-    concatenate_prompt = f""" You are a programmer combining different parts of a program. You have a design and a critic's feedback.
-    The design is as follows:
-    {design}
-    The critic's feedback is as follows:
-    {critic}
-    Combine the design and the critic's feedback into a single design that addresses the critic's concerns. Avoid redundancy.
-    Return an answer in the same format as the design, starting with [, ending with ] with no additional comments.
-    Also, reorder the tasks such that classes are defined first, followed by functions. Make sure that functions are defined after the classes they depend on, 
-    as well as other functions they may depend on. In this process, don't forget elements like imports, global variables, and the main function."""
-    response = chat_with_gpt(concatenate_prompt)
+    concatenate_prompt = (
+        f"You are a programmer tasked with integrating a program's design and a critic's feedback.\n\n"
+        f"The current design is as follows:\n{design}\n\n"
+        f"The critic's feedback is as follows:\n{critic}\n\n"
+        f"Your task is to combine the design and the critic's feedback into a single, unified design that fully addresses the critic's concerns. "
+        f"Ensure the following guidelines are met:\n"
+        f"1. Eliminate any redundancy between the design and the feedback.\n"
+        f"2. Return the final design in the same format as the original design, starting with [ and ending with ], with no additional comments.\n"
+        f"3. Reorder the elements as follows:\n"
+        f"   - Define all classes first, including their attributes and methods.\n"
+        f"   - Define functions afterward, ensuring that functions appear after any classes or other functions they depend on.\n"
+        f"4. Include necessary elements such as imports, global variables, and the main function (`run`) in the correct order.\n"
+    )
+    response = chat_with_gpt(concatenate_prompt, model)
     return response
 
-def function_coder(current_code, prompt, model="gpt-3.5-turbo"):
+def class_coder(current_code, prompt, model):
     """
     Interact with ChatGPT to get a response for a given prompt.
     """
-    function_prompt = f"""
-    You are a programmer writing code for a specific function. The code you write should be a Python function or method within a class.
-    The current code is as follows:
-    {current_code}
-    The task is as follows: you have to add a function or method to the code that will achieve the following goal:
-    {prompt}
-    Only return code without any extra comments. Make sure the code is correctly formatted and indented in particular 
-    if its a method for a class that is being added. You cant change the existing code, only add new code.
-    You can't pass or say "add speficic logic for function_name", you have to write the code. 
-    You may add comments inside the code or docstrings to explain the function purpose.
-    """
-    response = chat_with_gpt(function_prompt, model=model)
+    class_prompt = (
+        f"You are a programmer tasked with adding a new Python class to an existing codebase.\n\n"
+        f"The current code is as follows:\n{current_code}\n\n"
+        f"The new class to be implemented is described in the following JSON-like dictionary, which includes its name, description, "
+        f"attributes, and methods:\n{prompt}\n\n"
+        f"Your task is to:\n"
+        f"1. Add the new class to the provided codebase without modifying the existing code.\n"
+        f"2. Fully implement the class, including the `__init__` method and all described methods.\n"
+        f"3. Include inline comments or docstrings within the class to explain its purpose and functionality.\n\n"
+        f"Output requirements:\n"
+        f"- Only return the code for the new class without any additional comments or explanations outside the code.\n"
+        f"- Ensure proper formatting and indentation for Python code.\n"
+        f"- You cannot use placeholders such as 'add specific logic here'; you must fully implement the logic described in the class descriptor.\n"
+    )
+
+    response = chat_with_gpt(class_prompt, model)
     return response
 
 
-def improve_yourself(initial_prompt, current_code):
+def function_coder(current_code, prompt, model="gpt-4o"):
+    """
+    Interact with ChatGPT to get a response for a given prompt.
+    """
+    function_prompt = (
+        f"You are a programmer tasked with adding a new Python function or method to an existing codebase.\n\n"
+        f"The current code is as follows:\n{current_code}\n\n"
+        f"The task is to:\n"
+        f"1. Implement a function or method that achieves the following goal:\n{prompt}\n"
+        f"2. Add the function or method to the existing code without modifying the current code.\n"
+        f"3. If the function is part of a class, ensure it is correctly formatted and indented as a method within the class.\n\n"
+        f"Output requirements:\n"
+        f"- Only return the code for the new function or method, with no additional comments or explanations outside the code.\n"
+        f"- Ensure proper formatting and indentation for Python code.\n"
+        f"- Include inline comments or a docstring to describe the function's purpose and behavior.\n"
+        f"- Fully implement the logic for the function; avoid placeholders like 'add specific logic here.'\n"
+    )
+
+    response = chat_with_gpt(function_prompt, model)
+    return response
+
+
+def improve_code(initial_prompt, current_code, model):
     """
     Use a critic to evaluate the alignment of the initial prompt with the current code.
     """
-    improve = f"""
-    You are a critic evaluating programming tasks.
+    improve_prompt = (
+        f"You are a critic tasked with improving a codebase to better achieve a programming goal.\n\n"
+        f"The user's goal is as follows:\n\"{initial_prompt}\"\n\n"
+        f"The current code is as follows:\n{current_code}\n\n"
+        f"Your task is to:\n"
+        f"1. Rewrite the code to improve its overall quality, readability, and effectiveness in achieving the specified goal.\n"
+        f"2. You may:\n"
+        f"   - Reorganize the code, changing the order of classes, functions, or methods if needed.\n"
+        f"   - Add new functions, methods, or classes to enhance functionality.\n"
+        f"   - Remove redundant or unnecessary parts of the code.\n"
+        f"   - Fully implement any methods or functions that are currently incomplete.\n"
+        f"3. Ensure the code is well-structured and adheres to Python best practices.\n"
+        f"4. Include inline comments or docstrings to explain the purpose and functionality of classes, functions, or methods where relevant.\n\n"
+        f"Output requirements:\n"
+        f"- Return only the improved code, with no additional comments or explanations outside the code.\n"
+        f"- Ensure proper formatting, indentation, and a clear, logical flow in the final output.\n"
+    )
 
-    The user provided this goal: "{initial_prompt}".
-
-    Here is the code so far:
-
-    {current_code}
-    Rewrite everything, change order if need be, add functions or delete ones, but build a better version of the current code to achieve the goal.
-    Fill in methods or functions that are not implemented yet. Return only the code, no extra comments before or after,
-    but you may add comments inside the code or docstrings to explain the function purpose. If you have a limit on the number of characters,
-    then you can just return the code that is modified or added. Again, Return only the NEW code, no extra comments before or after, 
-    but drop the old one"""
-    response = chat_with_gpt(improve)
+    response = chat_with_gpt(improve_prompt, model)
     return response
 
 
-
-def global_review(initial_prompt):
-    current_code = get_current_code()
-    critic_response = critic_review(initial_prompt, current_code)
-    if critic_response == 'Yes' or 'Yes' in critic_response: # s'il renvoie ['Yes'] ce con
-        additional_tasks = None
-    else:
-        additional_tasks = parse_answer(critic_response)
-    return additional_tasks
-
-    return critic_response
-
-
-def save_code_to_file(content, file_path=OUTPUT_CODE_FILE):
+def save_code_to_file(content, file_path):
     """
     Save content to a file.
     """
@@ -162,29 +170,34 @@ def save_code_to_file(content, file_path=OUTPUT_CODE_FILE):
         file.write(content)
         file.write("\n\n")
 
-def save_design_to_file(content, file_path=OUTPUT_DESIGN_FILE):
+def save_design_to_file(content, folder_name):
     """
     Save content to a file.
     """
-    with open(file_path, "a") as file:
+    path = f"{folder_name}/generated_design.txt"
+    with open(path, "a") as file:
         file.write(content)
         file.write("\n\n")
 
-def get_current_code(version=None):
-    if version is None:
-        with open("generated_scripts/generated_code.py", "r") as file:
-            current_code = file.read()
-    else:
-        with open(f"generated_scripts/generated_code_iteration{version}.py", "r") as file:
-            current_code = file.read()
-    return current_code
+def get_current_code(folder_name, version=None):
+    try:
+        if version is None:
+            with open(f"{folder_name}/generated_code.py", "r") as file:
+                current_code = file.read()
+        else:
+            with open(f"{folder_name}/generated_code_iteration{version}.py", "r") as file:
+                current_code = file.read()
+        return current_code
+    except Exception as e:
+        return ""
 
-def erase_current_code():
-    with open("generated_scripts/generated_code.py", "w") as file:
+def erase_current_code(folder_name):
+    with open(f"{folder_name}/generated_code.py", "w") as file:
         file.write("")
 
-def erase_current_design():
-    with open("generated_scripts/generated_design.txt", "w") as file:
+
+def erase_current_design(folder_name):
+    with open(f"{folder_name}/generated_design.txt", "w") as file:
         file.write("")
 
 def parse_code_output(code_output):
@@ -211,7 +224,25 @@ def parse_answer(answer):
     try:
         return ast.literal_eval(answer)
     except Exception as e:
-        print(f"Error parsing the answer: {e}")
-        print(type(answer))
-        print(answer)
-        return None
+        print('trying other method') #dirty hacks here
+
+        input_text = answer
+        input_text = re.sub(r"'''(json|python)", "", input_text).strip("'''").strip()
+        try:
+            return json.loads(input_text)
+        except json.JSONDecodeError:
+            pass
+        try:
+            return ast.literal_eval(input_text)
+        except (ValueError, SyntaxError):
+            pass
+
+        match = re.search(r"\[.*\]", input_text, re.DOTALL)
+        if match:
+            try:
+                return ast.literal_eval(match.group(0))
+            except (ValueError, SyntaxError):
+                pass
+
+        # If all methods fail, return None or raise an error
+        raise ValueError("No valid list found in the input")
