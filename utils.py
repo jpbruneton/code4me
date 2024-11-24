@@ -9,8 +9,8 @@ openai.api_key = openai_apikey.api_key
 assert openai.api_key != "your_api_key", "Please set your OpenAI API key in the `openai.api_key` variable"
 
 def make_directory(folder_name):
-    if not os.path.exists(project_name):
-        os.mkdir(project_name)
+    if not os.path.exists(folder_name):
+        os.mkdir(folder_name)
 
 def chat_with_gpt(prompt, model):
     """
@@ -105,7 +105,9 @@ def class_coder(current_code, prompt, model):
         f"Output requirements:\n"
         f"- Only return the code for the new class without any additional comments or explanations outside the code.\n"
         f"- Ensure proper formatting and indentation for Python code.\n"
-        f"- You cannot use placeholders such as 'add specific logic here'; you must fully implement the logic described in the class descriptor.\n"
+        f"- You cannot use placeholders such as 'add specific logic here'; "
+        f"you must fully implement the logic described in the class descriptor.\n"
+        f"dont be too much verbose"
     )
 
     response = chat_with_gpt(class_prompt, model)
@@ -127,7 +129,8 @@ def function_coder(current_code, prompt, model="gpt-4o"):
         f"- Only return the code for the new function or method, with no additional comments or explanations outside the code.\n"
         f"- Ensure proper formatting and indentation for Python code.\n"
         f"- Include inline comments or a docstring to describe the function's purpose and behavior.\n"
-        f"- Fully implement the logic for the function; avoid placeholders like 'add specific logic here.'\n"
+        f"- Fully implement the logic for the function; avoid placeholders like 'add specific logic here."
+        f"dont be too much verbose'\n"
     )
 
     response = chat_with_gpt(function_prompt, model)
