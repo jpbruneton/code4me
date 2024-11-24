@@ -114,7 +114,7 @@ def class_coder(current_code, prompt, model):
     return response
 
 
-def function_coder(current_code, prompt, model="gpt-4o"):
+def function_coder(current_code, prompt, model):
     """
     Interact with ChatGPT to get a response for a given prompt.
     """

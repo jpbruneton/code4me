@@ -32,7 +32,7 @@ def main(model, initial_prompt, design_iterations, project_name, folder_name='ge
             code = utils.class_coder(current_code, str(task), model)
         else:
             current_code = utils.get_current_code(folder_name)
-            code = utils.function_coder(current_code, str(task))
+            code = utils.function_coder(current_code, str(task), model)
         code = utils.parse_code_output(code)
         print('Generated code:', code)
         filepath = f'{folder_name}/generated_code_iteration0.py'
@@ -70,7 +70,7 @@ if __name__ == "__main__":
     "Additional Notes:\n"
     "- Focus on core gameplay mechanics and visuals, not sound effects or music.\n"
     "- Ensure smooth gameplay and responsiveness."
-)
+    )
     #main(model, initial_prompt, design_iterations=5, project_name='space_invador', folder_name='generated_scripts')
 
     # another example prompt, same comment
@@ -101,4 +101,6 @@ if __name__ == "__main__":
     "- Optimize the code for maintainability and scalability.\n"
     "- Provide detailed documentation for both the backend and frontend, including setup, deployment, and usage instructions."
     )
-    main(model, initial_prompt, design_iterations=5, project_name='website', folder_name='generated_scripts')
+
+
+    main(model, initial_prompt, design_iterations=5, project_name='trading_grid', folder_name='generated_scripts')
